@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 from livereload import Server
 
-# Carrega variáveis do .env se existir
 load_dotenv()
 
 def create_app():
@@ -27,6 +26,10 @@ def create_app():
     def index():
         return render_template('index.html')
 
+    @app.route('/login')
+    def login():
+        return render_template('login.html')
+
     return app
 
 if __name__ == '__main__':
@@ -36,6 +39,7 @@ if __name__ == '__main__':
 
     server = Server(app.wsgi_app)
     server.watch('templates/index.html')
+    # server.watch('templates/login.html')
 
 
     server.serve(port=5000, host='127.0.0.1')

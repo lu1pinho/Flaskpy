@@ -5,10 +5,22 @@
     <link rel="stylesheet" href="/static/tailwind/output.css">
     <title>Title</title>
 </head>
-<body>
+<body class="h-screen flex items-center justify-center bg-gray-50">
+    <main>
+        <div class="bg-white rounded-lg shadow-md min-w-[60rem] min-h-[30rem] flex">
+            <div class="h-[30rem] w-1/2 p-5 flex flex-col items-center gap-4 justify-center">
+                <p class="text-center text-xl">Faça login no Medfy</p>
 
+                <input type="email" name="usermail" placeholder="Email" class="w-72 h-10 p-2 ring-[0.5px] ring-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="password" name="usermail" placeholder="Password" class="w-72 h-10 p-2 ring-[0.5px] ring-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
 
+                <button type="submit" class="w-72 h-10 p-2 ring-1 bg-blue-500 text-white text-xs font-semibold rounded-md">Login</button>
+            </div>
 
+            <div class="h-[30rem] w-1/2 bg-blue-600 rounded-r-lg">
 
+            </div>
+        </div>
+    </main>
 </body>
 </html>
