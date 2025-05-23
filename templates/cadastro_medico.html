@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Médico - Medfy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span class="logo-text">Medfy</span>
+                </div>
+                <button class="sidebar-toggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="medicos.html" class="nav-item active">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="convenios.html" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="agendamentos.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="menu-button">
+                    <i class="fas fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="page-title">Cadastro de Médico</h1>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Buscar...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-button">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-button">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <div class="avatar">
+                        <span>AD</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main -->
+            <main class="content">
+                <div class="page-header">
+                    <div class="back-button-container">
+                        <a href="medicos.html" class="btn btn-icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <h1 class="page-title">Cadastro de Médico</h1>
+                    </div>
+                </div>
+
+                <form class="form-container">
+                    <!-- Informações Profissionais -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Informações Profissionais</h2>
+                                <p class="card-description">Preencha os dados profissionais do médico</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="nome">Nome Completo</label>
+                                    <input type="text" id="nome" name="nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="especialidade">Especialidade</label>
+                                    <select id="especialidade" name="especialidade" required>
+                                        <option value="" disabled selected>Selecione uma especialidade</option>
+                                        <option value="cardiologia">Cardiologia</option>
+                                        <option value="dermatologia">Dermatologia</option>
+                                        <option value="endocrinologia">Endocrinologia</option>
+                                        <option value="gastroenterologia">Gastroenterologia</option>
+                                        <option value="geriatria">Geriatria</option>
+                                        <option value="ginecologia">Ginecologia</option>
+                                        <option value="neurologia">Neurologia</option>
+                                        <option value="oftalmologia">Oftalmologia</option>
+                                        <option value="ortopedia">Ortopedia</option>
+                                        <option value="otorrinolaringologia">Otorrinolaringologia</option>
+                                        <option value="pediatria">Pediatria</option>
+                                        <option value="psiquiatria">Psiquiatria</option>
+                                        <option value="urologia">Urologia</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="crm">CRM</label>
+                                    <input type="text" id="crm" name="crm" placeholder="00000-UF" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="turno">Turno de Trabalho</label>
+                                    <select id="turno" name="turno" required>
+                                        <option value="" disabled selected>Selecione um turno</option>
+                                        <option value="manha">Manhã</option>
+                                        <option value="tarde">Tarde</option>
+                                        <option value="noite">Noite</option>
+                                        <option value="integral">Integral</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telefone">Telefone</label>
+                                    <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="medicos.html" class="btn btn-outline">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Salvar Médico
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+        });
+    </script>
+</body>
+</html>

@@ -1,26 +1,354 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/static/tailwind/output.css">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medfy - Sistema de Gestão Hospitalar</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="h-screen flex items-center justify-center bg-gray-50">
-    <main>
-        <div class="bg-white rounded-lg shadow-md min-w-[60rem] min-h-[30rem] flex">
-            <div class="h-[30rem] w-1/2 p-5 flex flex-col items-center gap-4 justify-center">
-                <p class="text-center text-xl">Faça login no Medfy</p>
-
-                <input type="email" name="usermail" placeholder="Email" class="w-72 h-10 p-2 ring-[0.5px] ring-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="password" name="usermail" placeholder="Password" class="w-72 h-10 p-2 ring-[0.5px] ring-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-
-                <button type="submit" class="w-72 h-10 p-2 ring-1 bg-blue-500 text-white text-xs font-semibold rounded-md">Login</button>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span class="logo-text">Medfy</span>
+                </div>
+                <button class="sidebar-toggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             </div>
-
-            <div class="h-[30rem] w-1/2 bg-blue-600 rounded-r-lg">
-
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="medicos.html" class="nav-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="convenios.html" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="agendamentos.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="menu-button">
+                    <i class="fas fa-bars"></i>
+                    <span>Menu</span>
+                </button>
             </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Buscar...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-button">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-button">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <div class="avatar">
+                        <span>AD</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main -->
+            <main class="content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Total de Pacientes</h3>
+                            <i class="fas fa-users text-blue"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">1,248</div>
+                            <p class="stat-description">+12% em relação ao mês anterior</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Médicos Ativos</h3>
+                            <i class="fas fa-user-md text-blue"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">42</div>
+                            <p class="stat-description">+2 novos médicos este mês</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Consultas Hoje</h3>
+                            <i class="fas fa-calendar-alt text-blue"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">24</div>
+                            <p class="stat-description">6 consultas pendentes</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Faturamento Mensal</h3>
+                            <i class="fas fa-dollar-sign text-blue"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">R$ 48.750</div>
+                            <p class="stat-description">+18% em relação ao mês anterior</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="content-grid">
+                    <!-- Appointments Card -->
+                    <div class="card appointments-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Próximos Agendamentos</h2>
+                                <p class="card-description">Consultas agendadas para hoje</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="appointment-list">
+                                <div class="appointment-item">
+                                    <div class="appointment-info">
+                                        <div class="appointment-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <p class="appointment-name">Ana Silva</p>
+                                            <p class="appointment-doctor">Dr. Carlos Mendes - Cardiologia</p>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-time">
+                                        <p class="time">14:30</p>
+                                        <p class="room">Sala 103</p>
+                                    </div>
+                                </div>
+                                <div class="appointment-item">
+                                    <div class="appointment-info">
+                                        <div class="appointment-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <p class="appointment-name">João Santos</p>
+                                            <p class="appointment-doctor">Dra. Juliana Alves - Pediatria</p>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-time">
+                                        <p class="time">15:00</p>
+                                        <p class="room">Sala 105</p>
+                                    </div>
+                                </div>
+                                <div class="appointment-item">
+                                    <div class="appointment-info">
+                                        <div class="appointment-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <p class="appointment-name">Carlos Pereira</p>
+                                            <p class="appointment-doctor">Dr. Roberto Santos - Ortopedia</p>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-time">
+                                        <p class="time">16:15</p>
+                                        <p class="room">Sala 102</p>
+                                    </div>
+                                </div>
+                                <div class="appointment-item">
+                                    <div class="appointment-info">
+                                        <div class="appointment-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <p class="appointment-name">Juliana Costa</p>
+                                            <p class="appointment-doctor">Dra. Camila Ferreira - Dermatologia</p>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-time">
+                                        <p class="time">17:30</p>
+                                        <p class="room">Sala 104</p>
+                                    </div>
+                                </div>
+                                <a href="agendamentos.html" class="btn btn-outline full-width">Ver todos os agendamentos</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Card -->
+                    <div class="card quick-actions-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Ações Rápidas</h2>
+                                <p class="card-description">Acesse as principais funcionalidades</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions">
+                                <a href="cadastro-paciente.html" class="btn btn-primary full-width">
+                                    <i class="fas fa-users"></i>
+                                    Novo Paciente
+                                </a>
+                                <a href="cadastro-medico.html" class="btn btn-primary full-width">
+                                    <i class="fas fa-user-md"></i>
+                                    Novo Médico
+                                </a>
+                                <a href="cadastro-agendamento.html" class="btn btn-primary full-width">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Novo Agendamento
+                                </a>
+                                <a href="cadastro-convenio.html" class="btn btn-primary full-width">
+                                    <i class="fas fa-id-card"></i>
+                                    Novo Convênio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <!-- Specialties Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Especialidades Mais Procuradas</h2>
+                                <p class="card-description">Distribuição de consultas por especialidade</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Cardiologia</span>
+                                        <span>32%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 32%; background-color: #3b82f6;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Ortopedia</span>
+                                        <span>27%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 27%; background-color: #60a5fa;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Pediatria</span>
+                                        <span>23%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 23%; background-color: #93c5fd;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Dermatologia</span>
+                                        <span>18%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 18%; background-color: #bfdbfe;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Convênios</h2>
+                                <p class="card-description">Distribuição de pacientes por convênio</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Unimed</span>
+                                        <span>35%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 35%; background-color: #2563eb;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Amil</span>
+                                        <span>25%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 25%; background-color: #3b82f6;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Bradesco Saúde</span>
+                                        <span>20%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 20%; background-color: #60a5fa;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Particular</span>
+                                        <span>15%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 15%; background-color: #93c5fd;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">
+                                        <span>Outros</span>
+                                        <span>5%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 5%; background-color: #bfdbfe;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-    </main>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Paciente - Medfy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span class="logo-text">Medfy</span>
+                </div>
+                <button class="sidebar-toggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="pacientes.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="medicos.html" class="nav-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="convenios.html" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="agendamentos.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="menu-button">
+                    <i class="fas fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="page-title">Cadastro de Paciente</h1>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Buscar...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-button">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-button">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <div class="avatar">
+                        <span>AD</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main -->
+            <main class="content">
+                <div class="page-header">
+                    <div class="back-button-container">
+                        <a href="pacientes.html" class="btn btn-icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <h1 class="page-title">Cadastro de Paciente</h1>
+                    </div>
+                </div>
+
+                <form class="form-container">
+                    <!-- Informações Pessoais -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Informações Pessoais</h2>
+                                <p class="card-description">Preencha os dados pessoais do paciente</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="nome">Nome Completo</label>
+                                    <input type="text" id="nome" name="nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataNascimento">Data de Nascimento</label>
+                                    <input type="date" id="dataNascimento" name="dataNascimento" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cpf">CPF</label>
+                                    <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rg">RG</label>
+                                    <input type="text" id="rg" name="rg" placeholder="00.000.000-0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telefone">Telefone</label>
+                                    <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="convenio">Convênio</label>
+                                    <select id="convenio" name="convenio" required>
+                                        <option value="" disabled selected>Selecione um convênio</option>
+                                        <option value="unimed">Unimed</option>
+                                        <option value="amil">Amil</option>
+                                        <option value="bradesco">Bradesco Saúde</option>
+                                        <option value="sulamerica">SulAmérica</option>
+                                        <option value="particular">Particular</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Endereço</h2>
+                                <p class="card-description">Preencha os dados de endereço do paciente</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="cep">CEP</label>
+                                    <input type="text" id="cep" name="cep" placeholder="00000-000" required>
+                                </div>
+                                <div class="form-group span-2">
+                                    <label for="logradouro">Logradouro</label>
+                                    <input type="text" id="logradouro" name="logradouro" placeholder="Rua, Avenida, etc." required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numero">Número</label>
+                                    <input type="text" id="numero" name="numero" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="complemento">Complemento</label>
+                                    <input type="text" id="complemento" name="complemento" placeholder="Apto, Bloco, etc.">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bairro">Bairro</label>
+                                    <input type="text" id="bairro" name="bairro" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cidade">Cidade</label>
+                                    <input type="text" id="cidade" name="cidade" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="estado">Estado</label>
+                                    <select id="estado" name="estado" required>
+                                        <option value="" disabled selected>UF</option>
+                                        <option value="AC">AC</option>
+                                        <option value="AL">AL</option>
+                                        <option value="AP">AP</option>
+                                        <option value="AM">AM</option>
+                                        <option value="BA">BA</option>
+                                        <option value="CE">CE</option>
+                                        <option value="DF">DF</option>
+                                        <option value="ES">ES</option>
+                                        <option value="GO">GO</option>
+                                        <option value="MA">MA</option>
+                                        <option value="MT">MT</option>
+                                        <option value="MS">MS</option>
+                                        <option value="MG">MG</option>
+                                        <option value="PA">PA</option>
+                                        <option value="PB">PB</option>
+                                        <option value="PR">PR</option>
+                                        <option value="PE">PE</option>
+                                        <option value="PI">PI</option>
+                                        <option value="RJ">RJ</option>
+                                        <option value="RN">RN</option>
+                                        <option value="RS">RS</option>
+                                        <option value="RO">RO</option>
+                                        <option value="RR">RR</option>
+                                        <option value="SC">SC</option>
+                                        <option value="SP">SP</option>
+                                        <option value="SE">SE</option>
+                                        <option value="TO">TO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="pacientes.html" class="btn btn-outline">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Salvar Paciente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+        });
+    </script>
+</body>
+</html>
