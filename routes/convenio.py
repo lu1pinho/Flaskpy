@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy import text
 from extensions import db
+from datetime import date
 
 convenio_bp = Blueprint('convenio', __name__, url_prefix='/convenio')
 
@@ -120,3 +121,46 @@ def delete_convenio(id_convenio):
             "message": "Erro ao excluir convênio.",
             "details": str(e)
         }), 500
+
+
+@convenio_bp.route('/estatisticas', methods=['GET'])
+def get_estatisticas():
+    try:
+        query = text("""
+            SELECT 
+                c.nome_convenio,
+                COUNT(DISTINCT p.id_paciente) AS quantidade
+            FROM "Convenio" c
+            JOIN "Paciente" p ON p.id_convenio = c.id_convenio
+            GROUP BY c.nome_convenio
+            ORDER BY quantidade DESC
+        """)
+
+        resultado = db.session.execute(query).mappings().all()
+
+        total = sum(row['quantidade'] for row in resultado) or 1
+
+        top3 = resultado[:3]
+        outros = resultado[3:]
+
+        percentual_top3 = [
+            {
+                'nome_convenio': row['nome_convenio'],
+                'percentual': round((row['quantidade'] / total) * 100, 2)
+            }
+            for row in top3
+        ]
+
+        percentual_outros = round((sum(row['quantidade'] for row in outros) / total) * 100, 2)
+
+        if percentual_outros > 0:
+            percentual_top3.append({
+                'nome_convenio': 'Outros',
+                'percentual': percentual_outros
+            })
+
+        return jsonify(percentual_top3)
+
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar estatísticas: {str(e)}'}), 500
+

@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy import text
 from extensions import db
+from datetime import date
 
 esp_bp = Blueprint('esp', __name__, url_prefix='/esp')
 
@@ -90,3 +91,36 @@ def delete_especialidade(id_especialidade):
             "message": "Erro interno ao deletar especialidade.",
             "details": str(e)
         }), 500
+
+
+@esp_bp.route('/estatisticas', methods=['GET'])
+def get_estatisticas():
+    try:
+        hoje = date.today()
+
+        sql = text('''
+            SELECT
+                e.nome_especialidade,
+                COUNT(*) AS quantidade
+            FROM "Consulta" c
+            JOIN "Especialidade" e ON c.especialidade = e.id_especialidade
+            WHERE DATE(c.data_consulta) = :hoje
+            GROUP BY e.nome_especialidade
+        ''')
+
+        result = db.session.execute(sql, {'hoje': hoje}).fetchall()
+
+        total = sum(r.quantidade for r in result)
+        estatisticas = [
+            {
+                'nome_especialidade': r.nome_especialidade,
+                'percentual': round((r.quantidade / total) * 100, 2)
+            }
+            for r in result
+        ]
+
+        return jsonify(estatisticas)
+
+    except Exception as e:
+        print(f"Erro ao buscar estatísticas: {e}")
+        return jsonify({'erro': 'Erro interno ao buscar estatísticas'}), 500

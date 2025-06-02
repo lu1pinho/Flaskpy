@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Médico - Medfy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-heartbeat"></i>
+          </div>
+          <span class="logo-text">Medfy</span>
+        </div>
+        <button class="sidebar-toggle">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+      <nav class="sidebar-nav" role="navigation" aria-label="Sidebar Navigation">
+                <a href="{{ url_for('index_page') }}" class="nav-item" aria-current="page">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('view_paciente') }}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="{{ url_for('view_medico') }}" class="nav-item active">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="{{ url_for('convenios') }}" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+      <div class="sidebar-footer">
+        <button class="menu-button">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+      <header class="header">
+        <div class="back-button-container">
+          <a href="{{ url_for('view_medico') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            <span class="hide-mobile">Voltar</span>
+          </a>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="avatar">AD</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" id="nome-medico">Carregando...</h2>
+            <p class="card-description">Informações detalhadas do médico</p>
+          </div>
+          <div class="card-content">
+            <form id="form-edicao" class="form-container">
+              <input type="hidden" id="edit-id" />
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="edit-nome">Nome:</label>
+                  <input type="text" id="edit-nome" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-crm">CRM:</label>
+                  <input type="text" id="edit-crm" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-turno">Turno:</label>
+                  <select id="edit-turno" required class="full-width">
+                    <option value="Manhã">Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                    <option value="Integral">Integral</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-telefone">Telefone:</label>
+                  <input type="text" id="edit-telefone" required class="full-width" />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="edit-email">Email:</label>
+                  <input type="email" id="edit-email" required class="full-width" />
+                </div>
+
+                <div class="form-group span-2">
+                  <label>Especialidades:</label>
+                  <div id="checkbox-especialidades" class="checkbox-group"></div>
+                </div>
+              </div>
+
+              <div class="form-group p-t">
+                <button type="submit" class="btn btn-primary full-width">
+                  <i class="fas fa-save"></i>
+                  Atualizar Médico
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+
+  <script>
+      document.addEventListener('DOMContentLoaded', () => {
+    // ========== FUNÇÕES DE CARREGAMENTO ========== //
+    async function carregarEspecialidades(idsSelecionadas = []) {
+        try {
+            const response = await fetch('/esp');
+            if (!response.ok) throw new Error('Erro ao carregar especialidades');
+
+            const especialidades = await response.json();
+            const container = document.getElementById('checkbox-especialidades');
+            container.innerHTML = '';
+
+            especialidades.forEach(esp => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `esp-${esp.id_especialidade}`;
+                checkbox.value = esp.id_especialidade;
+                checkbox.name = 'especialidades';
+                checkbox.checked = idsSelecionadas.includes(esp.id_especialidade);
+
+                const label = document.createElement('label');
+                label.htmlFor = `esp-${esp.id_especialidade}`;
+                label.textContent = esp.nome_especialidade;
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+
+            return especialidades;
+        } catch (error) {
+            console.error("Erro ao carregar especialidades:", error);
+            return [];
+        }
+    }
+
+    async function buscarEspecialidadesDoMedico(id_med) {
+        try {
+            const response = await fetch(`/espmed/?id_med=${id_med}`);
+            if (!response.ok) throw new Error('Erro ao buscar especialidades do médico');
+            const data = await response.json();
+            return data.map(rel => rel.id_esp);
+        } catch (error) {
+            console.error("Erro ao buscar especialidades do médico:", error);
+            return [];
+        }
+    }
+
+    // ========== MÁSCARAS DE FORMULÁRIO ========== //
+    function formatarTelefone(telefone) {
+        if (!telefone) return '';
+        const numeros = telefone.replace(/\D/g, '');
+        if (numeros.length === 11) return numeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        if (numeros.length === 10) return numeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        return telefone;
+    }
+
+    function formatarCRM(crm) {
+        return crm ? crm.replace(/[^a-zA-Z0-9\/]/g, '') : '';
+    }
+
+    // ========== CARREGAR DADOS DO MÉDICO ========== //
+    async function carregarDetalhesMedico() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        if (!id) return alert("ID do médico não fornecido.");
+
+        try {
+            // Carrega dados básicos do médico
+            const resMedico = await fetch(`/medico/${id}`);
+            if (!resMedico.ok) throw new Error(resMedico.status === 404 ? "Médico não encontrado" : "Erro na API");
+            const medico = await resMedico.json();
+
+            // Carrega especialidades do médico
+            const especialidadesMedico = await buscarEspecialidadesDoMedico(id);
+
+            // Carrega todas as especialidades disponíveis
+            await carregarEspecialidades(especialidadesMedico);
+
+            // Preenche os campos do formulário
+            document.getElementById('edit-id').value = medico.id_med;
+            document.getElementById('edit-nome').value = medico.nome_med || '';
+            document.getElementById('edit-crm').value = medico.crm || '';
+            document.getElementById('edit-telefone').value = formatarTelefone(medico.telefone) || '';
+            document.getElementById('edit-email').value = medico.email_med || '';
+            document.getElementById('nome-medico').textContent = medico.nome_med || 'Médico sem nome';
+
+            // Seleciona o turno atual do médico
+            if (medico.turno) {
+                const turnoSelect = document.getElementById('edit-turno');
+                for (let i = 0; i < turnoSelect.options.length; i++) {
+                    if (turnoSelect.options[i].value === medico.turno) {
+                        turnoSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+        } catch (erro) {
+            console.error("Erro ao carregar médico:", erro);
+            alert(`Erro: ${erro.message}`);
+        }
+    }
+
+    // ========== ATUALIZAR MÉDICO ========== //
+    async function atualizarMedico(event) {
+        event.preventDefault();
+
+        // Validação dos campos obrigatórios
+        const camposObrigatorios = ['edit-nome', 'edit-crm', 'edit-turno', 'edit-telefone', 'edit-email'];
+        for (const campoId of camposObrigatorios) {
+            if (!document.getElementById(campoId).value) {
+                return alert(`Preencha o campo "${document.querySelector(`label[for="${campoId}"]`).textContent.replace(':', '')}"!`);
+            }
+        }
+
+        // Obtém especialidades selecionadas
+        const checkboxes = document.querySelectorAll('input[name="especialidades"]:checked');
+        const especialidades = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+        if (especialidades.length === 0) {
+            return alert("Selecione pelo menos uma especialidade!");
+        }
+
+        const dados = {
+            id_med: document.getElementById('edit-id').value,
+            nome_med: document.getElementById('edit-nome').value.trim(),
+            crm: formatarCRM(document.getElementById('edit-crm').value),
+            turno: document.getElementById('edit-turno').value,
+            telefone: document.getElementById('edit-telefone').value.replace(/\D/g, ''),
+            email_med: document.getElementById('edit-email').value.trim(),
+            especialidades: especialidades
+        };
+
+        try {
+            const response = await fetch('/medico/', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            const resultado = await response.json();
+
+            if (!response.ok) throw new Error(resultado.error || "Erro na API");
+
+            alert("Médico atualizado com sucesso! ✅");
+            window.location.href = "{{ url_for('view_medico') }}";
+
+        } catch (erro) {
+            console.error("Erro ao atualizar:", erro);
+            alert(`Erro: ${erro.message}`);
+        }
+    }
+
+    // ========== INICIALIZAÇÃO ========== //
+    carregarDetalhesMedico();
+    document.getElementById('form-edicao').addEventListener('submit', atualizarMedico);
+
+    // Máscara automática de telefone
+        document.getElementById('edit-telefone').addEventListener('input', (e) => {
+            e.target.value = formatarTelefone(e.target.value);
+        });
+});
+  </script>
+
+
+
+
+
+</body>
+</html>

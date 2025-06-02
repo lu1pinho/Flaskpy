@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Paciente - Medfy</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -13,17 +13,11 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-plus"></i>
-                    </div>
                     <span class="logo-text">Medfy</span>
                 </div>
-                <button class="sidebar-toggle">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
             </div>
             <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
+                <a href="{{ url_for('index_page') }}" class="nav-item">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
@@ -39,7 +33,7 @@
                     <i class="fas fa-id-card"></i>
                     <span>Convênios</span>
                 </a>
-                <a href="agendamentos.html" class="nav-item">
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Agendamentos</span>
                 </a>
@@ -57,10 +51,6 @@
             <!-- Header -->
             <header class="header">
                 <h1 class="page-title">Cadastro de Paciente</h1>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="search" placeholder="Buscar...">
-                </div>
                 <div class="header-actions">
                     <button class="icon-button">
                         <i class="fas fa-bell"></i>
@@ -78,14 +68,13 @@
             <main class="content">
                 <div class="page-header">
                     <div class="back-button-container">
-                        <a href="pacientes.html" class="btn btn-icon">
+                        <a href="{{ url_for('view_paciente') }}" class="btn btn-icon">
                             <i class="fas fa-arrow-left"></i>
                         </a>
-                        <h1 class="page-title">Cadastro de Paciente</h1>
                     </div>
                 </div>
 
-                <form class="form-container">
+                <form class="form-container" method="post">
                     <!-- Informações Pessoais -->
                     <div class="card">
                         <div class="card-header">
@@ -124,14 +113,13 @@
                                     <label for="convenio">Convênio</label>
                                     <select id="convenio" name="convenio" required>
                                         <option value="" disabled selected>Selecione um convênio</option>
-                                        <option value="unimed">Unimed</option>
-                                        <option value="amil">Amil</option>
-                                        <option value="bradesco">Bradesco Saúde</option>
-                                        <option value="sulamerica">SulAmérica</option>
-                                        <option value="particular">Particular</option>
                                     </select>
                                 </div>
                             </div>
+                            <div class="form-group p-t">
+                                     <label for="historico">Histórico</label>
+                                    <textarea name="historico" id="historico"></textarea>
+                                </div>
                         </div>
                     </div>
 
@@ -205,10 +193,9 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <a href="pacientes.html" class="btn btn-outline">Cancelar</a>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i>
-                                Salvar Paciente
+                                Adicionar Paciente
                             </button>
                         </div>
                     </div>
@@ -218,11 +205,68 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.main-content').classList.toggle('expanded');
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/convenio/');
+            const convenios = await res.json();
+
+            const select = document.getElementById('convenio');
+            convenios.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id_convenio;
+                option.textContent = c.nome_convenio;
+                select.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Erro ao carregar convênios:', err);
+            alert('Não foi possível carregar os convênios');
+        }
+    });
+
+    document.querySelector('.form-container').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+
+        const endereco = `${form.logradouro.value}, ${form.numero.value}${form.complemento.value ? ' - ' + form.complemento.value : ''}, ${form.bairro.value}, ${form.cidade.value} - ${form.estado.value}, CEP: ${form.cep.value}`;
+
+        const dados = {
+            nome_paciente: form.nome.value,
+            cpf_paciente: form.cpf.value,
+            rg_paciente: form.rg.value,
+            nasc_paciente: form.dataNascimento.value,
+            contact_paciente: form.telefone.value,
+            email_paciente: form.email.value,
+            end_paciente: endereco,
+            hist_paciente: form.historico.value,
+            id_convenio: parseInt(form.convenio.value)
+        };
+
+        console.log('Dados a serem enviados:', JSON.stringify(dados, null, 2));
+        try {
+            const res = await fetch('/paciente/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+
+            const resData = await res.json();
+
+            if (!res.ok) {
+                throw new Error(resData.error || 'Erro ao cadastrar paciente');
+            }
+
+            alert('Paciente cadastrado com sucesso!');
+            window.location.href = '/pacientes';
+
+        } catch (err) {
+            console.error('Erro ao enviar dados:', err);
+            alert('Erro ao enviar dados. Verifique os campos e tente novamente.');
+        }
+    });
+</script>
+
 </body>
 </html>

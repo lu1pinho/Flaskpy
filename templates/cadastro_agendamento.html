@@ -3,172 +3,695 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Agendamento - Medfy</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Agendamentos - Medfy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <span class="logo-text">Medfy</span>
-                </div>
-                <button class="sidebar-toggle">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+<div class="container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-text">Medfy</span>
             </div>
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
+        </div>
+        <nav class="sidebar-nav" role="navigation" aria-label="Sidebar Navigation">
+                <a href="{{ url_for('index_page') }}" class="nav-item" aria-current="page">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="pacientes.html" class="nav-item">
+                <a href="{{ url_for('view_paciente') }}" class="nav-item">
                     <i class="fas fa-users"></i>
                     <span>Pacientes</span>
                 </a>
-                <a href="medicos.html" class="nav-item">
+                <a href="{{ url_for('view_medico') }}" class="nav-item">
                     <i class="fas fa-user-md"></i>
                     <span>Médicos</span>
                 </a>
-                <a href="convenios.html" class="nav-item">
+                <a href="{{ url_for('convenios') }}" class="nav-item">
                     <i class="fas fa-id-card"></i>
                     <span>Convênios</span>
                 </a>
-                <a href="agendamentos.html" class="nav-item active">
+                <a href="{{ url_for('agendamentos') }}" class="nav-item active">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Agendamentos</span>
                 </a>
             </nav>
-            <div class="sidebar-footer">
-                <button class="menu-button">
-                    <i class="fas fa-bars"></i>
-                    <span>Menu</span>
+        <div class="sidebar-footer">
+            <button class="menu-button">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="content">
+            <div class="page-header">
+                <div></div>
+                <button id="btn-novo-agendamento" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nova Consulta
                 </button>
             </div>
-        </aside>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <h1 class="page-title">Cadastro de Agendamento</h1>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="search" placeholder="Buscar...">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Lista de Agendamentos</h2>
+                    <p class="card-description">Gerencie todos os agendamentos cadastrados no sistema</p>
                 </div>
-                <div class="header-actions">
-                    <button class="icon-button">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    <button class="icon-button">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <div class="avatar">
-                        <span>AD</span>
+                <div class="card-content">
+                    <div class="table-actions">
+                        <div class="search-container">
+                            <i class="fas fa-search"></i>
+                            <input type="search" placeholder="Buscar agendamento..." id="table-search" />
+                        </div>
+                        <button class="icon-button"><i class="fas fa-filter"></i></button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="tabela-agendamentos">
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Médico</th>
+                                    <th>Especialidade</th>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="consultas-body"></tbody>
+                        </table>
                     </div>
                 </div>
-            </header>
+            </div>
+        </main>
+    </div>
+</div>
 
-            <!-- Main -->
-            <main class="content">
-                <div class="page-header">
-                    <div class="back-button-container">
-                        <a href="agendamentos.html" class="btn btn-icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </a>
-                        <h1 class="page-title">Cadastro de Agendamento</h1>
+<!-- Modal -->
+<div id="consulta-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Agendar Nova Consulta</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="consulta-form">
+                <input type="hidden" id="id_consulta" />
+
+                <div class="form-group">
+                    <label for="paciente">Paciente</label>
+                    <div class="autocomplete">
+                        <input type="text" id="paciente" placeholder="Digite o nome do paciente" required />
+                        <div id="paciente-suggestions" class="autocomplete-items"></div>
                     </div>
                 </div>
 
-                <form class="form-container">
-                    <!-- Informações do Agendamento -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <h2 class="card-title">Informações do Agendamento</h2>
-                                <p class="card-description">Preencha os dados para agendar uma consulta</p>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="paciente">Paciente</label>
-                                    <select id="paciente" name="paciente" required>
-                                        <option value="" disabled selected>Selecione um paciente</option>
-                                        <option value="1">Maria Silva</option>
-                                        <option value="2">João Santos</option>
-                                        <option value="3">Ana Oliveira</option>
-                                        <option value="4">Carlos Pereira</option>
-                                        <option value="5">Juliana Costa</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="medico">Médico</label>
-                                    <select id="medico" name="medico" required>
-                                        <option value="" disabled selected>Selecione um médico</option>
-                                        <option value="1">Dr. Carlos Mendes</option>
-                                        <option value="2">Dra. Juliana Alves</option>
-                                        <option value="3">Dr. Roberto Santos</option>
-                                        <option value="4">Dra. Camila Ferreira</option>
-                                        <option value="5">Dr. Marcelo Lima</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="especialidade">Especialidade</label>
-                                    <input type="text" id="especialidade" name="especialidade" readonly class="readonly-field">
-                                </div>
-                                <div class="form-group">
-                                    <label for="valor">Valor da Consulta (R$)</label>
-                                    <input type="text" id="valor" name="valor" placeholder="0,00" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="data">Data da Consulta</label>
-                                    <input type="date" id="data" name="data" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="hora">Hora da Consulta</label>
-                                    <input type="time" id="hora" name="hora" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="agendamentos.html" class="btn btn-outline">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i>
-                                Salvar Agendamento
-                            </button>
-                        </div>
+                <div class="form-group">
+                    <label for="medico">Médico</label>
+                    <div class="autocomplete">
+                        <input type="text" id="medico" placeholder="Digite o nome do médico" required />
+                        <div id="medico-suggestions" class="autocomplete-items"></div>
                     </div>
-                </form>
-            </main>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data_consulta">Data</label>
+                        <input type="date" id="data_consulta" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="hora_consulta">Hora</label>
+                        <input type="time" id="hora_consulta" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor_consulta">Valor (R$)</label>
+                    <input type="number" id="valor_consulta" step="0.01" min="0" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" required>
+                        <option value="pendente">Pendente</option>
+                        <option value="confirmado">Confirmado</option>
+                        <option value="cancelado">Cancelado</option>
+                        <option value="realizado">Realizado</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline close-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agendar</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+</div>
 
-    <script>
-        // Toggle sidebar
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.main-content').classList.toggle('expanded');
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Elementos da interface
+    const btnNovoAgendamento = document.getElementById('btn-novo-agendamento');
+    const modal = document.getElementById('consulta-modal');
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    const consultaForm = document.getElementById('consulta-form');
+    const tabelaConsultas = document.getElementById('tabela-agendamentos');
+    const consultasBody = document.getElementById('consultas-body');
+    const pacienteInput = document.getElementById('paciente');
+    const medicoInput = document.getElementById('medico');
+    const especialidadeSelect = document.getElementById('especialidade');
+    const dataConsultaInput = document.getElementById('data_consulta');
+    const horaConsultaInput = document.getElementById('hora_consulta');
+    const valorConsultaInput = document.getElementById('valor_consulta');
+    const statusSelect = document.getElementById('status');
+    const idConsultaHidden = document.getElementById('id_consulta');
+
+    // Variáveis globais
+    let pacientes = [];
+    let medicos = [];
+    let especialidades = [];
+    let consultas = [];
+    let modoEdicao = false;
+
+    // Inicialização
+    carregarDadosIniciais();
+    configurarEventListeners();
+
+    // Funções principais
+    function carregarDadosIniciais() {
+        Promise.all([
+            fetchPacientes(),
+            fetchMedicos(),
+            fetchEspecialidades(),
+            fetchConsultas()
+        ]).then(() => {
+            renderizarTabelaConsultas();
+            popularSelectEspecialidades();
+        }).catch(error => {
+            console.error('Erro ao carregar dados iniciais:', error);
+        });
+    }
+
+    function configurarEventListeners() {
+        // Modal
+        btnNovoAgendamento.addEventListener('click', abrirModalNovaConsulta);
+        closeModalButtons.forEach(btn => {
+            btn.addEventListener('click', fecharModal);
         });
 
-        // Simular preenchimento automático da especialidade ao selecionar médico
-        document.getElementById('medico').addEventListener('change', function() {
-            const medicoId = this.value;
-            const especialidades = {
-                '1': 'Cardiologia',
-                '2': 'Pediatria',
-                '3': 'Ortopedia',
-                '4': 'Dermatologia',
-                '5': 'Neurologia'
-            };
+        // Formulário
+        consultaForm.addEventListener('submit', salvarConsulta);
 
-            document.getElementById('especialidade').value = especialidades[medicoId] || '';
+        // Autocomplete
+        pacienteInput.addEventListener('input', () => buscarPacientes(pacienteInput.value));
+        medicoInput.addEventListener('input', () => buscarMedicos(medicoInput.value));
+    }
+
+    // Funções para buscar dados da API
+    async function fetchPacientes() {
+        try {
+            const response = await fetch('/paciente');
+            if (!response.ok) throw new Error('Erro ao buscar pacientes');
+            pacientes = await response.json();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao carregar pacientes', 'error');
+        }
+    }
+
+    async function fetchMedicos() {
+        try {
+            const response = await fetch('/medico');
+            if (!response.ok) throw new Error('Erro ao buscar médicos');
+            medicos = await response.json();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao carregar médicos', 'error');
+        }
+    }
+
+    async function fetchEspecialidades() {
+        try {
+            const response = await fetch('/esp');
+            if (!response.ok) throw new Error('Erro ao buscar especialidades');
+            especialidades = await response.json();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao carregar especialidades', 'error');
+        }
+    }
+
+    async function fetchConsultas() {
+        try {
+            const response = await fetch('/consulta');
+            if (!response.ok) throw new Error('Erro ao buscar consultas');
+            consultas = await response.json();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao carregar consultas', 'error');
+        }
+    }
+
+    // Funções para manipulação da UI
+    function abrirModalNovaConsulta() {
+        modoEdicao = false;
+        consultaForm.reset();
+        idConsultaHidden.value = '';
+        modal.style.display = 'flex';
+    }
+
+    function abrirModalEditarConsulta(consulta) {
+        modoEdicao = true;
+        idConsultaHidden.value = consulta.id_consulta;
+
+        // Preencher formulário com os dados da consulta
+        const paciente = pacientes.find(p => p.id_paciente === consulta.id_paciente);
+        if (paciente) pacienteInput.value = paciente.nome_paciente;
+
+        const medico = medicos.find(m => m.id_med === consulta.id_med);
+        if (medico) medicoInput.value = medico.nome_med;
+
+        especialidadeSelect.value = consulta.especialidade;
+
+        // Separar data e hora
+        const dataHora = new Date(consulta.data_consulta);
+        dataConsultaInput.value = dataHora.toISOString().split('T')[0];
+        horaConsultaInput.value = dataHora.toTimeString().substring(0, 5);
+
+        valorConsultaInput.value = consulta.valor_consulta;
+        statusSelect.value = consulta.status || 'pendente';
+
+        modal.style.display = 'flex';
+    }
+
+    function fecharModal() {
+        modal.style.display = 'none';
+    }
+
+    function renderizarTabelaConsultas() {
+        consultasBody.innerHTML = '';
+
+        consultas.forEach(consulta => {
+            const paciente = pacientes.find(p => p.id_paciente === consulta.id_paciente);
+            const medico = medicos.find(m => m.id_med === consulta.id_med);
+            const especialidade = especialidades.find(e => e.id_especialidade === consulta.especialidade);
+
+            const dataHora = new Date(consulta.data_consulta);
+            const dataFormatada = dataHora.toLocaleDateString('pt-BR');
+            const horaFormatada = dataHora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+
+            // Corrigindo o tratamento do valor_consulta
+            const valor = Number(consulta.valor_consulta) || 0;
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${paciente ? paciente.nome_paciente : 'N/A'}</td>
+                <td>${medico ? medico.nome_med : 'N/A'}</td>
+                <td>${especialidade ? especialidade.nome_especialidade : 'N/A'}</td>
+                <td>${dataFormatada}</td>
+                <td>${horaFormatada}</td>
+                <td>R$ ${valor.toFixed(2)}</td>
+                <td><span class="status-badge status-${consulta.status}">${consulta.status}</span></td>
+                <td class="action-buttons">
+                    <button class="btn-icon btn-edit" data-id="${consulta.id_consulta}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" data-id="${consulta.id_consulta}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            consultasBody.appendChild(row);
         });
-    </script>
+
+        // Adicionar event listeners aos botões de ação
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                const consulta = consultas.find(c => c.id_consulta == id);
+                if (consulta) abrirModalEditarConsulta(consulta);
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                deletarConsulta(id);
+            });
+        });
+    }
+
+    function popularSelectEspecialidades() {
+        especialidadeSelect.innerHTML = '<option value="">Selecione uma especialidade</option>';
+
+        especialidades.forEach(especialidade => {
+            const option = document.createElement('option');
+            option.value = especialidade.id_especialidade;
+            option.textContent = especialidade.nome_especialidade;
+            especialidadeSelect.appendChild(option);
+        });
+    }
+
+    // Funções para autocomplete
+    function buscarPacientes(termo) {
+        const suggestionsContainer = document.getElementById('paciente-suggestions');
+        suggestionsContainer.innerHTML = '';
+
+        if (termo.length < 2) return;
+
+        const resultados = pacientes.filter(paciente =>
+            paciente.nome_paciente.toLowerCase().includes(termo.toLowerCase())
+        );
+
+        resultados.slice(0, 5).forEach(paciente => {
+            const div = document.createElement('div');
+            div.textContent = paciente.nome_paciente;
+            div.dataset.id = paciente.id_paciente;
+            div.addEventListener('click', () => {
+                pacienteInput.value = paciente.nome_paciente;
+                suggestionsContainer.innerHTML = '';
+            });
+            suggestionsContainer.appendChild(div);
+        });
+    }
+
+    function buscarMedicos(termo) {
+        const suggestionsContainer = document.getElementById('medico-suggestions');
+        suggestionsContainer.innerHTML = '';
+
+        if (termo.length < 2) return;
+
+        const resultados = medicos.filter(medico =>
+            medico.nome_med.toLowerCase().includes(termo.toLowerCase())
+        );
+
+        resultados.slice(0, 5).forEach(medico => {
+            const div = document.createElement('div');
+            div.textContent = medico.nome_med;
+            div.dataset.id = medico.id_med;
+            div.addEventListener('click', () => {
+                medicoInput.value = medico.nome_med;
+                suggestionsContainer.innerHTML = '';
+            });
+            suggestionsContainer.appendChild(div);
+        });
+    }
+
+    // Funções para manipulação de consultas
+    async function salvarConsulta(e) {
+        e.preventDefault();
+
+        // Validar campos
+        if (!pacienteInput.value || !medicoInput.value || !especialidadeSelect.value ||
+            !dataConsultaInput.value || !horaConsultaInput.value || !valorConsultaInput.value) {
+            mostrarNotificacao('Preencha todos os campos obrigatórios', 'error');
+            return;
+        }
+
+        // Encontrar IDs do paciente e médico
+        const pacienteSelecionado = pacientes.find(p => p.nome_paciente === pacienteInput.value);
+        const medicoSelecionado = medicos.find(m => m.nome_med === medicoInput.value);
+
+        if (!pacienteSelecionado || !medicoSelecionado) {
+            mostrarNotificacao('Paciente ou médico não encontrado', 'error');
+            return;
+        }
+
+        // Criar objeto da consulta
+        const dataHora = new Date(`${dataConsultaInput.value}T${horaConsultaInput.value}`);
+
+        const consulta = {
+            id_paciente: pacienteSelecionado.id_paciente,
+            id_med: medicoSelecionado.id_med,
+            especialidade: parseInt(especialidadeSelect.value),
+            data_consulta: dataHora.toISOString(),
+            hora_consulta: dataHora.toISOString(),
+            valor_consulta: parseFloat(valorConsultaInput.value),
+            status: statusSelect.value
+        };
+
+        try {
+            let response;
+            if (modoEdicao) {
+                consulta.id_consulta = parseInt(idConsultaHidden.value);
+                response = await fetch(`/consulta/${consulta.id_consulta}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(consulta)
+                });
+            } else {
+                response = await fetch('/consulta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(consulta)
+                });
+            }
+
+            if (!response.ok) throw new Error('Erro ao salvar consulta');
+
+            const novaConsulta = await response.json();
+            mostrarNotificacao('Consulta salva com sucesso', 'success');
+
+            // Atualizar lista de consultas
+            await fetchConsultas();
+            renderizarTabelaConsultas();
+            fecharModal();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao salvar consulta', 'error');
+        }
+    }
+
+    async function deletarConsulta(id) {
+        if (!confirm('Tem certeza que deseja excluir esta consulta?')) return;
+
+        try {
+            const response = await fetch(`/consulta/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Erro ao excluir consulta');
+
+            mostrarNotificacao('Consulta excluída com sucesso', 'success');
+
+            // Atualizar lista de consultas
+            await fetchConsultas();
+            renderizarTabelaConsultas();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarNotificacao('Erro ao excluir consulta', 'error');
+        }
+    }
+
+    // Função auxiliar para notificações
+    function mostrarNotificacao(mensagem, tipo) {
+        // Implementação básica - pode ser substituída por um sistema de notificação mais sofisticado
+        alert(`${tipo.toUpperCase()}: ${mensagem}`);
+    }
+});
+</script>
+
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 16px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 24px;
+    }
+
+    /* Estilos para autocomplete */
+    .autocomplete {
+        position: relative;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #ddd;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .autocomplete-items div {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .autocomplete-items div:hover {
+        background-color: #f5f5f5;
+    }
+
+    /* Estilos para status */
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-pendente {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-confirmado {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelado {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-realizado {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    /* Ajustes para tabela responsiva */
+    @media (max-width: 768px) {
+        .hide-mobile {
+            display: none;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .hide-tablet {
+            display: none;
+        }
+    }
+
+    /* Estilos para botões de ação */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        color: var(--gray-500);
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background-color: var(--gray-100);
+        color: var(--gray-700);
+    }
+
+    .btn-delete:hover {
+        color: var(--red-800);
+        background-color: var(--red-100);
+    }
+
+    .btn-edit:hover {
+        color: var(--blue-800);
+        background-color: var(--blue-100);
+    }
+</style>
+
 </body>
 </html>

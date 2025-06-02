@@ -18,6 +18,29 @@ def get_all_esp_med():
             "details": str(e)
         }), 500
 
+@espmed_bp.route('/', methods=['GET'])
+def getbyid():
+    try:
+        id_medico = request.args.get('id_medico', type=int)
+
+        if id_medico is None:
+            return jsonify({'error': 'Parâmetro id_medico é obrigatório'}), 400
+
+        especialidades = EspecialidadeMedico.query.filter_by(id_med=id_medico).all()
+
+        resultado = [
+            {
+                'id_especialidade': espmed.id_esp,
+                'id_medico': espmed.id_med
+            }
+            for espmed in especialidades
+        ]
+
+        return jsonify(resultado), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @espmed_bp.route('/', methods=['POST'])
 def create_esp_med():
     try:

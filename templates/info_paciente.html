@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalhes do Paciente - Medfy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-text">Medfy</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav" role="navigation" aria-label="Sidebar Navigation">
+                <a href="{{ url_for('index_page') }}" class="nav-item" aria-current="page">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('view_paciente') }}" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="{{ url_for('view_medico') }}" class="nav-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="{{ url_for('convenios') }}" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+      <div class="sidebar-footer">
+        <button class="menu-button">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+      <header class="header">
+        <div class="back-button-container">
+          <a href="{{ url_for('view_paciente') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            <span class="hide-mobile">Voltar</span>
+          </a>
+
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" id="nome-paciente">Carregando...</h2>
+            <p class="card-description">Informações detalhadas do paciente</p>
+          </div>
+          <div class="card-content">
+            <form id="form-edicao" class="form-container">
+              <input type="hidden" id="edit-id" />
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="edit-nome">Nome:</label>
+                  <input type="text" id="edit-nome" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-cpf">CPF:</label>
+                  <input type="text" id="edit-cpf" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-rg">RG:</label>
+                  <input type="text" id="edit-rg" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-nasc">Data de Nascimento:</label>
+                  <input type="date" id="edit-nasc" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-tel">Telefone:</label>
+                  <input type="text" id="edit-tel" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-email">Email:</label>
+                  <input type="email" id="edit-email" required class="full-width" />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="edit-end">Endereço:</label>
+                  <input type="text" id="edit-end" required class="full-width" />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="edit-hist">Histórico:</label>
+                  <textarea id="edit-hist" rows="4" class="full-width"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-convenio">Convênio:</label>
+                  <select id="edit-convenio" required class="full-width">
+                    <option value="">Carregando convênios...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group p-t">
+                <button type="submit" class="btn btn-primary full-width">
+                  <i class="fas fa-save"></i>
+                  Atualizar Paciente
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let convenios = []; // Armazenará a lista de convênios
+
+    function formatarCPF(cpf) {
+      return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+    }
+
+    function formatarTelefone(telefone) {
+      return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    }
+
+    function formatarDataParaInput(dataString) {
+      const data = new Date(dataString);
+      return data.toISOString().split('T')[0];
+    }
+
+    async function carregarConvenios() {
+      try {
+        const response = await fetch('/convenio');
+        const data = await response.json();
+        convenios = data;
+
+        const select = document.getElementById('edit-convenio');
+        select.innerHTML = '<option value="">Selecione um convênio</option>';
+
+        data.forEach(convenio => {
+          const option = document.createElement('option');
+          option.value = convenio.id_convenio;
+          option.textContent = convenio.nome_convenio;
+          select.appendChild(option);
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Erro ao carregar convênios:', error);
+        document.getElementById('edit-convenio').innerHTML = '<option value="">Erro ao carregar convênios</option>';
+        return [];
+      }
+    }
+
+    async function carregarDetalhesPaciente() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      if (!id) {
+        alert("ID do paciente não fornecido.");
+        return;
+      }
+
+      try {
+        await carregarConvenios();
+
+        const res = await fetch(`/paciente/${id}`);
+        const paciente = await res.json();
+
+        document.getElementById('edit-id').value = paciente.id_paciente;
+        document.getElementById('edit-nome').value = paciente.nome_paciente;
+        document.getElementById('edit-cpf').value = paciente.cpf_paciente;
+        document.getElementById('edit-rg').value = paciente.rg_paciente;
+        document.getElementById('edit-nasc').value = formatarDataParaInput(paciente.nasc_paciente);
+        document.getElementById('edit-tel').value = paciente.contact_paciente;
+        document.getElementById('edit-email').value = paciente.email_paciente;
+        document.getElementById('edit-end').value = paciente.end_paciente;
+        document.getElementById('edit-hist').value = paciente.hist_paciente;
+
+        // Seleciona o convênio atual do paciente
+        if (paciente.id_convenio) {
+          document.getElementById('edit-convenio').value = paciente.id_convenio;
+        }
+
+        document.getElementById('nome-paciente').textContent = paciente.nome_paciente;
+      } catch (erro) {
+        console.error("Erro ao carregar detalhes do paciente:", erro);
+        alert("Erro ao carregar os dados.");
+      }
+    }
+
+    async function atualizarPaciente(event) {
+      event.preventDefault();
+
+      const nasc = document.getElementById('edit-nasc').value;
+      if (!nasc) {
+        alert("Preencha a data de nascimento.");
+        return;
+      }
+
+      const convenioSelect = document.getElementById('edit-convenio');
+      if (!convenioSelect.value) {
+        alert("Selecione um convênio.");
+        return;
+      }
+
+      const dadosAtualizados = {
+        id_paciente: document.getElementById('edit-id').value,
+        nome_paciente: document.getElementById('edit-nome').value,
+        cpf_paciente: document.getElementById('edit-cpf').value,
+        rg_paciente: document.getElementById('edit-rg').value,
+        nasc_paciente: nasc,
+        contact_paciente: document.getElementById('edit-tel').value,
+        email_paciente: document.getElementById('edit-email').value,
+        end_paciente: document.getElementById('edit-end').value,
+        hist_paciente: document.getElementById('edit-hist').value,
+        id_convenio: convenioSelect.value
+      };
+
+      try {
+        const response = await fetch('/paciente/', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dadosAtualizados)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Paciente atualizado com sucesso.");
+        } else {
+          alert(`Erro ao atualizar: ${result.error}`);
+        }
+      } catch (erro) {
+        console.error("Erro ao atualizar paciente:", erro);
+        alert("Erro de conexão com o servidor.");
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarDetalhesPaciente();
+      document.getElementById('form-edicao').addEventListener('submit', atualizarPaciente);
+    });
+  </script>
+</body>
+</html>

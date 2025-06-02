@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Médico - Medfy</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -31,15 +31,15 @@
                     <i class="fas fa-users"></i>
                     <span>Pacientes</span>
                 </a>
-                <a href="medicos.html" class="nav-item active">
-                    <i class="fas fa-user-md"></i>
-                    <span>Médicos</span>
-                </a>
+                    <a href="{{ url_for('view_medico') }}" class="nav-item active">
+                        <i class="fas fa-user-md"></i>
+                        <span>Médicos</span>
+                    </a>
                 <a href="convenios.html" class="nav-item">
                     <i class="fas fa-id-card"></i>
                     <span>Convênios</span>
                 </a>
-                <a href="agendamentos.html" class="nav-item">
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Agendamentos</span>
                 </a>
@@ -157,11 +157,174 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.main-content').classList.toggle('expanded');
-        });
+       // cadastro_medico.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('telefone');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+
+        // Formatação para (00) 00000-0000 ou (00) 0000-0000
+        if (value.length > 2) {
+            value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+        }
+        if (value.length > 10) {
+            value = `${value.substring(0, 10)}-${value.substring(10)}`;
+        }
+
+        e.target.value = value;
+    });
+
+    // Máscara para CRM (00000-UF)
+    const crmInput = document.getElementById('crm');
+    crmInput.addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase();
+
+        // Remove tudo que não for letra, número ou hífen
+        value = value.replace(/[^A-Z0-9-]/g, '');
+
+        // Garante o formato 00000-UF
+        if (value.length > 5 && !value.includes('-')) {
+            value = `${value.substring(0, 5)}-${value.substring(5)}`;
+        }
+
+        // Limita a 8 caracteres (5 números + hífen + 2 letras)
+        if (value.length > 8) {
+            value = value.substring(0, 8);
+        }
+
+        e.target.value = value;
+    });
+
+    // Validação do formulário
+    const form = document.querySelector('.form-container');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Validação dos campos
+        if (!validarFormulario()) {
+            return;
+        }
+
+        // Mostrar loading no botão
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+        submitButton.disabled = true;
+
+        try {
+            // Preparar dados para envio
+            const medicoData = {
+                nome_med: document.getElementById('nome').value.trim(),
+                especialidade: document.getElementById('especialidade').value,
+                crm: document.getElementById('crm').value.trim(),
+                turno: document.getElementById('turno').value,
+                telefone: document.getElementById('telefone').value.replace(/\D/g, ''),
+                email_med: document.getElementById('email').value.trim()
+            };
+
+            // Enviar para a API
+            const response = await fetch('/medico/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(medicoData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Erro ao cadastrar médico');
+            }
+
+            // Sucesso - redirecionar ou mostrar mensagem
+            alert('Médico cadastrado com sucesso!');
+            window.location.href = '/view/medico'; // Redireciona para a lista de médicos
+
+        } catch (error) {
+            console.error('Erro:', error);
+            alert(`Erro ao cadastrar médico: ${error.message}`);
+        } finally {
+            // Restaurar botão
+            submitButton.innerHTML = originalButtonText;
+            submitButton.disabled = false;
+        }
+    });
+
+    // Função de validação do formulário
+    function validarFormulario() {
+        let isValid = true;
+
+        // Validação do nome
+        const nome = document.getElementById('nome').value.trim();
+        if (nome.length < 3) {
+            alert('Por favor, insira um nome válido (mínimo 3 caracteres)');
+            isValid = false;
+        }
+
+        // Validação da especialidade
+        const especialidade = document.getElementById('especialidade').value;
+        if (!especialidade) {
+            alert('Por favor, selecione uma especialidade');
+            isValid = false;
+        }
+
+        // Validação do CRM (formato 00000-UF)
+        const crm = document.getElementById('crm').value.trim();
+        const crmRegex = /^\d{5}-[A-Z]{2}$/;
+        if (!crmRegex.test(crm)) {
+            alert('Por favor, insira um CRM válido no formato 00000-UF');
+            isValid = false;
+        }
+
+        // Validação do turno
+        const turno = document.getElementById('turno').value;
+        if (!turno) {
+            alert('Por favor, selecione um turno de trabalho');
+            isValid = false;
+        }
+
+        // Validação do telefone (mínimo 10 dígitos)
+        const telefone = document.getElementById('telefone').value.replace(/\D/g, '');
+        if (telefone.length < 10) {
+            alert('Por favor, insira um telefone válido');
+            isValid = false;
+        }
+
+        // Validação do email
+        const email = document.getElementById('email').value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Por favor, insira um email válido');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // Toggle sidebar
+    document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+        document.querySelector('.main-content').classList.toggle('expanded');
+    });
+
+    document.querySelectorAll('a[href="index.html"]').forEach(link => {
+        link.href = "{{ url_for('index_page') }}";
+    });
+    document.querySelectorAll('a[href="pacientes.html"]').forEach(link => {
+        link.href = "{{ url_for('view_paciente') }}";
+    });
+    document.querySelectorAll('a[href="medicos.html"]').forEach(link => {
+        link.href = "{{ url_for('view_medico') }}";
+    });
+});
     </script>
+
 </body>
 </html>

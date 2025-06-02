@@ -4,18 +4,17 @@ from extensions import db
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
-
 @user_bp.route('/', methods=['GET'])
 def user_index():
     try:
         result = db.session.execute(text('SELECT * FROM "Usuario"'))
         rows = result.fetchall()
         if not rows:
-            return jsonify({"ERRO": "Nenhum usuário encontrado"}), 404
+            return jsonify({"error": "Nenhum usuário encontrado"}), 404
         users = [dict(row._mapping) for row in rows]
         return jsonify(users), 200
     except Exception as e:
-        return jsonify({"ERRO": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 @user_bp.route('/<int:id_usuario>', methods=['GET'])
 def user_search_by_id(id_usuario):
@@ -40,20 +39,18 @@ def user_create():
         if not data:
             return jsonify({"error": "Corpo da requisição vazio ou inválido"}), 400
 
-        params = {
-            'email': data.get('email'),
-            'senha': data.get('senha'),
-            'tipo_usuario': data.get('tipo_usuario')
-        }
+        email = data.get('email')
+        senha = data.get('senha')
+        tipo_usuario = data.get('tipo_usuario')
 
-        if any(value is None for value in params.values()):
+        if not email or not senha or not tipo_usuario:
             return jsonify({"error": "Dados incompletos"}), 400
 
         sql = text(
             'INSERT INTO "Usuario" (email, senha, tipo_usuario, atualizado_em) VALUES (:email, :senha, :tipo_usuario, NOW())'
         )
 
-        db.session.execute(sql, params)
+        db.session.execute(sql, {'email': email, 'senha': senha, 'tipo_usuario': tipo_usuario})
         db.session.commit()
 
         return jsonify({"message": "Usuário criado com sucesso"}), 201
@@ -83,14 +80,12 @@ def user_update():
         if not data:
             return jsonify({"error": "Corpo da requisição vazio ou inválido"}), 400
 
-        params = {
-            'email': data.get('email'),
-            'senha': data.get('senha'),
-            'tipo_usuario': data.get('tipo_usuario'),
-            'id_usuario': data.get('id_usuario')
-        }
+        email = data.get('email')
+        senha = data.get('senha')
+        tipo_usuario = data.get('tipo_usuario')
+        id_usuario = data.get('id_usuario')
 
-        if any(value is None for key, value in params.items() if key != 'id_usuario'):
+        if not id_usuario or not email or not senha or not tipo_usuario:
             return jsonify({"error": "Dados incompletos"}), 400
 
         sql = text(
@@ -98,7 +93,12 @@ def user_update():
             'WHERE id_usuario = :id_usuario'
         )
 
-        result = db.session.execute(sql, params)
+        result = db.session.execute(sql, {
+            'email': email,
+            'senha': senha,
+            'tipo_usuario': tipo_usuario,
+            'id_usuario': id_usuario
+        })
         db.session.commit()
 
         if result.rowcount == 0:
@@ -109,6 +109,31 @@ def user_update():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@user_bp.route('/medfy/login', methods=['POST'])
+def api_login():
+    if request.is_json:
+        dados = request.get_json()
+        email = dados.get('email')
+        senha = dados.get('senha')
+    else:
+        email = request.form.get('email')
+        senha = request.form.get('senha')
 
+    if not email or not senha:
+        return jsonify({"error": "Email/Senha incompleto"}), 400
 
+    sql = text('SELECT id_usuario, email, senha FROM "Usuario" WHERE email = :email')
+    result = db.session.execute(sql, {'email': email})
+    row = result.mappings().fetchone()
 
+    if not row:
+        return jsonify({"error": "Usuário não encontrado"}), 404
+
+    if row['senha'] != senha:
+        return jsonify({"error": "Senha incorreta"}), 401
+
+    return jsonify({
+        "id": row['id_usuario'],
+        "email": row['email'],
+        "autenticado": True
+    }), 200

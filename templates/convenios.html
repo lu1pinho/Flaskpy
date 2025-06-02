@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convênios - Medfy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-text">Medfy</span>
+        </div>
+        <button class="sidebar-toggle">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+      <nav class="sidebar-nav" role="navigation" aria-label="Sidebar Navigation">
+                <a href="{{ url_for('index_page') }}" class="nav-item" aria-current="page">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('view_paciente') }}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pacientes</span>
+                </a>
+                <a href="{{ url_for('view_medico') }}" class="nav-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Médicos</span>
+                </a>
+                <a href="{{ url_for('convenios') }}" class="nav-item active">
+                    <i class="fas fa-id-card"></i>
+                    <span>Convênios</span>
+                </a>
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Agendamentos</span>
+                </a>
+            </nav>
+      <div class="sidebar-footer">
+        <button class="menu-button">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+      <header class="header">
+        <div class="back-button-container">
+          <a href="{{ url_for('index_page') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            <span class="hide-mobile">Voltar</span>
+          </a>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="avatar">AD</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="page-header">
+          <h1 class="page-title">Convênios</h1>
+          <button id="btn-novo-convenio" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Novo Convênio
+          </button>
+        </div>
+
+        <!-- Lista de Convênios -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Lista de Convênios</h2>
+            <p class="card-description">Todos os convênios cadastrados no sistema</p>
+          </div>
+          <div class="card-content">
+            <div class="table-actions">
+              <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Buscar convênio..." id="table-search" />
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="convenios-body">
+                  <!-- Dados serão carregados via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal para Novo Convênio -->
+        <div id="modal-convenio" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Cadastrar Novo Convênio</h3>
+              <button class="btn-icon btn-close-modal">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="form-convenio" class="form-container">
+                <div class="form-group">
+                  <label for="nome-convenio">Nome do Convênio:</label>
+                  <input type="text" id="nome-convenio" required class="full-width" />
+                </div>
+
+                <div class="form-group">
+                  <label for="cnpj-convenio">CNPJ:</label>
+                  <input type="text" id="cnpj-convenio" required class="full-width" />
+                </div>
+
+                <div class="form-group p-t">
+                  <button type="submit" class="btn btn-primary full-width">
+                    <i class="fas fa-save"></i>
+                    Salvar Convênio
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // ========== VARIÁVEIS GLOBAIS ========== //
+    const modalConvenio = document.getElementById('modal-convenio');
+    const btnNovoConvenio = document.getElementById('btn-novo-convenio');
+    const btnCloseModal = document.querySelector('.btn-close-modal');
+    const formConvenio = document.getElementById('form-convenio');
+    const tableSearch = document.getElementById('table-search');
+
+    // ========== FUNÇÕES PRINCIPAIS ========== //
+    async function carregarConvenios() {
+      try {
+        const response = await fetch('/convenio/');
+        if (!response.ok) throw new Error('Erro ao carregar convênios');
+
+        const convenios = await response.json();
+        const tbody = document.getElementById('convenios-body');
+        tbody.innerHTML = '';
+
+        if (convenios.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum convênio cadastrado</td></tr>';
+          return;
+        }
+
+        convenios.forEach(convenio => {
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>${convenio.id_convenio}</td>
+            <td class="highlight">${convenio.nome_convenio}</td>
+            <td>${formatarCNPJ(convenio.cnpj)}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon btn-editar" data-id="${convenio.id_convenio}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-delete" data-id="${convenio.id_convenio}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', (e) => deletarConvenio(e.currentTarget.getAttribute('data-id')));
+        });
+
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+          btn.addEventListener('click', (e) => editarConvenio(e.currentTarget.getAttribute('data-id')));
+        });
+
+      } catch (error) {
+        console.error('Erro:', error);
+        const tbody = document.getElementById('convenios-body');
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center">Erro ao carregar convênios: ${error.message}</td></tr>`;
+      }
+    }
+
+    async function cadastrarConvenio(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById('nome-convenio').value.trim();
+      const cnpj = document.getElementById('cnpj-convenio').value.replace(/\D/g, '');
+
+      if (!nome || !cnpj) {
+        return alert('Preencha todos os campos obrigatórios!');
+      }
+
+      if (cnpj.length !== 14) {
+        return alert('CNPJ deve ter 14 dígitos!');
+      }
+
+      try {
+        const response = await fetch('/convenio/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome_convenio: nome, cnpj })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Erro ao cadastrar convênio');
+        }
+
+        alert('Convênio cadastrado com sucesso!');
+        fecharModal();
+        carregarConvenios();
+        formConvenio.reset();
+
+      } catch (error) {
+        console.error('Erro:', error);
+        alert(`Erro ao cadastrar convênio: ${error.message}`);
+      }
+    }
+
+    async function editarConvenio(id) {
+      try {
+        const response = await fetch(`/convenio/${id}`);
+        if (!response.ok) throw new Error('Erro ao carregar convênio');
+
+        const convenio = await response.json();
+
+        document.getElementById('nome-convenio').value = convenio.nome_convenio;
+        document.getElementById('cnpj-convenio').value = formatarCNPJ(convenio.cnpj);
+
+        formConvenio.dataset.modo = 'edicao';
+        formConvenio.dataset.id = id;
+        document.querySelector('.modal-header h3').textContent = 'Editar Convênio';
+
+        abrirModal();
+
+      } catch (error) {
+        console.error('Erro:', error);
+        alert(`Erro ao carregar convênio: ${error.message}`);
+      }
+    }
+
+    async function atualizarConvenio(id) {
+      const nome = document.getElementById('nome-convenio').value.trim();
+      const cnpj = document.getElementById('cnpj-convenio').value.replace(/\D/g, '');
+
+      if (!nome || !cnpj) {
+        return alert('Preencha todos os campos obrigatórios!');
+      }
+
+      try {
+        const response = await fetch(`/convenio/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome_convenio: nome, cnpj })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Erro ao atualizar convênio');
+        }
+
+        alert('Convênio atualizado com sucesso!');
+        fecharModal();
+        carregarConvenios();
+        formConvenio.reset();
+
+      } catch (error) {
+        console.error('Erro:', error);
+        alert(`Erro ao atualizar convênio: ${error.message}`);
+      }
+    }
+
+    async function deletarConvenio(id) {
+      if (!confirm('Tem certeza que deseja excluir este convênio?')) return;
+
+      try {
+        const response = await fetch(`/convenio/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Erro ao deletar convênio');
+        }
+
+        alert(result.message || 'Convênio deletado com sucesso');
+        carregarConvenios();
+
+      } catch (error) {
+        console.error('Erro:', error);
+        alert(`Erro ao deletar convênio: ${error.message}`);
+      }
+    }
+
+    // ========== FUNÇÕES AUXILIARES ========== //
+    function formatarCNPJ(cnpj) {
+      if (!cnpj) return '';
+      cnpj = String(cnpj).replace(/\D/g, '');
+      return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    }
+
+    function abrirModal() {
+      modalConvenio.style.display = 'flex';
+    }
+
+    function fecharModal() {
+      modalConvenio.style.display = 'none';
+      formConvenio.reset();
+      formConvenio.removeAttribute('data-modo');
+      formConvenio.removeAttribute('data-id');
+      document.querySelector('.modal-header h3').textContent = 'Cadastrar Novo Convênio';
+    }
+
+    function filtrarTabela(termo) {
+      const linhas = document.querySelectorAll('#convenios-body tr');
+      termo = termo.toLowerCase();
+
+      linhas.forEach(linha => {
+        const textoLinha = linha.textContent.toLowerCase();
+        linha.style.display = textoLinha.includes(termo) ? '' : 'none';
+      });
+    }
+
+    // ========== MÁSCARAS ========== //
+    document.getElementById('cnpj-convenio').addEventListener('input', function(e) {
+      this.value = formatarCNPJ(this.value);
+    });
+
+    // ========== EVENT LISTENERS ========== //
+    btnNovoConvenio.addEventListener('click', abrirModal);
+    btnCloseModal.addEventListener('click', fecharModal);
+    modalConvenio.addEventListener('click', (e) => {
+      if (e.target === modalConvenio) fecharModal();
+    });
+
+    formConvenio.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (formConvenio.dataset.modo === 'edicao') {
+        atualizarConvenio(formConvenio.dataset.id);
+      } else {
+        cadastrarConvenio(e);
+      }
+    });
+
+    tableSearch.addEventListener('input', (e) => {
+      filtrarTabela(e.target.value);
+    });
+
+    carregarConvenios();
+  });
+</script>
+
+
+
+</body>
+</html>

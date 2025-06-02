@@ -1,55 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Medfy - Sistema de Gestão Hospitalar</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-plus"></i>
-                    </div>
                     <span class="logo-text">Medfy</span>
                 </div>
-                <button class="sidebar-toggle">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
             </div>
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item active">
+            <nav class="sidebar-nav" role="navigation" aria-label="Sidebar Navigation">
+                <a href="{{ url_for('index_page') }}" class="nav-item active" aria-current="page">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="pacientes.html" class="nav-item">
+                <a href="{{ url_for('view_paciente') }}" class="nav-item">
                     <i class="fas fa-users"></i>
                     <span>Pacientes</span>
                 </a>
-                <a href="medicos.html" class="nav-item">
+                <a href="{{ url_for('view_medico') }}" class="nav-item">
                     <i class="fas fa-user-md"></i>
                     <span>Médicos</span>
                 </a>
-                <a href="convenios.html" class="nav-item">
+                <a href="{{ url_for('convenios') }}" class="nav-item">
                     <i class="fas fa-id-card"></i>
                     <span>Convênios</span>
                 </a>
-                <a href="agendamentos.html" class="nav-item">
+                <a href="{{ url_for('agendamentos') }}" class="nav-item">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Agendamentos</span>
                 </a>
             </nav>
             <div class="sidebar-footer">
-                <button class="menu-button">
-                    <i class="fas fa-bars"></i>
-                    <span>Menu</span>
-                </button>
-            </div>
+            <button class="menu-button">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </button>
+        </div>
         </aside>
 
         <!-- Main Content -->
@@ -57,18 +50,11 @@
             <!-- Header -->
             <header class="header">
                 <h1 class="page-title">Dashboard</h1>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="search" placeholder="Buscar...">
-                </div>
                 <div class="header-actions">
-                    <button class="icon-button">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    <button class="icon-button">
+                    <button class="icon-button" aria-label="Configurações">
                         <i class="fas fa-cog"></i>
                     </button>
-                    <div class="avatar">
+                    <div class="avatar" aria-label="Usuário: AD">
                         <span>AD</span>
                     </div>
                 </div>
@@ -81,41 +67,41 @@
                     <div class="card stat-card">
                         <div class="card-header">
                             <h3 class="card-title">Total de Pacientes</h3>
-                            <i class="fas fa-users text-blue"></i>
+                            <i class="fas fa-users text-blue" aria-hidden="true"></i>
                         </div>
                         <div class="card-content">
-                            <div class="stat-value">1,248</div>
-                            <p class="stat-description">+12% em relação ao mês anterior</p>
+                            <div class="stat-value">{{ "{:,}".format(total_pacientes) }}</div>
+                            <p class="stat-description">{{ total_atendidos_mes }} atendidos este mês</p>
                         </div>
                     </div>
                     <div class="card stat-card">
                         <div class="card-header">
-                            <h3 class="card-title">Médicos Ativos</h3>
-                            <i class="fas fa-user-md text-blue"></i>
+                            <h3 class="card-title">Médicos Cadastrados</h3>
+                            <i class="fas fa-user-md text-blue" aria-hidden="true"></i>
                         </div>
                         <div class="card-content">
-                            <div class="stat-value">42</div>
-                            <p class="stat-description">+2 novos médicos este mês</p>
+                            <div class="stat-value">{{ total_medicos }}</div>
+                            <p class="stat-description">{{ total_medicos_ativos }} médicos ativos este mês</p>
                         </div>
                     </div>
                     <div class="card stat-card">
                         <div class="card-header">
                             <h3 class="card-title">Consultas Hoje</h3>
-                            <i class="fas fa-calendar-alt text-blue"></i>
+                            <i class="fas fa-calendar-alt text-blue" aria-hidden="true"></i>
                         </div>
                         <div class="card-content">
-                            <div class="stat-value">24</div>
-                            <p class="stat-description">6 consultas pendentes</p>
+                            <div class="stat-value">{{ total_consultas_hoje }}</div>
+                            <p class="stat-description">{{ total_consultas_pendentes_hoje }} consultas pendentes para hoje</p>
                         </div>
                     </div>
                     <div class="card stat-card">
                         <div class="card-header">
                             <h3 class="card-title">Faturamento Mensal</h3>
-                            <i class="fas fa-dollar-sign text-blue"></i>
+                            <i class="fas fa-dollar-sign text-blue" aria-hidden="true"></i>
                         </div>
                         <div class="card-content">
-                            <div class="stat-value">R$ 48.750</div>
-                            <p class="stat-description">+18% em relação ao mês anterior</p>
+                            <div class="stat-value">R$ {{ faturamento_atual }}</div>
+                            <p class="stat-description">em faturamento</p>
                         </div>
                     </div>
                 </div>
@@ -131,69 +117,10 @@
                             </div>
                         </div>
                         <div class="card-content">
-                            <div class="appointment-list">
-                                <div class="appointment-item">
-                                    <div class="appointment-info">
-                                        <div class="appointment-icon">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <div>
-                                            <p class="appointment-name">Ana Silva</p>
-                                            <p class="appointment-doctor">Dr. Carlos Mendes - Cardiologia</p>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-time">
-                                        <p class="time">14:30</p>
-                                        <p class="room">Sala 103</p>
-                                    </div>
-                                </div>
-                                <div class="appointment-item">
-                                    <div class="appointment-info">
-                                        <div class="appointment-icon">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <div>
-                                            <p class="appointment-name">João Santos</p>
-                                            <p class="appointment-doctor">Dra. Juliana Alves - Pediatria</p>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-time">
-                                        <p class="time">15:00</p>
-                                        <p class="room">Sala 105</p>
-                                    </div>
-                                </div>
-                                <div class="appointment-item">
-                                    <div class="appointment-info">
-                                        <div class="appointment-icon">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <div>
-                                            <p class="appointment-name">Carlos Pereira</p>
-                                            <p class="appointment-doctor">Dr. Roberto Santos - Ortopedia</p>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-time">
-                                        <p class="time">16:15</p>
-                                        <p class="room">Sala 102</p>
-                                    </div>
-                                </div>
-                                <div class="appointment-item">
-                                    <div class="appointment-info">
-                                        <div class="appointment-icon">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <div>
-                                            <p class="appointment-name">Juliana Costa</p>
-                                            <p class="appointment-doctor">Dra. Camila Ferreira - Dermatologia</p>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-time">
-                                        <p class="time">17:30</p>
-                                        <p class="room">Sala 104</p>
-                                    </div>
-                                </div>
-                                <a href="agendamentos.html" class="btn btn-outline full-width">Ver todos os agendamentos</a>
+                            <div class="appointment-list" id="appointmentList">
+
                             </div>
+                                <a href="{{ url_for('agendamentos') }}" class="btn btn-outline full-width padding-top">Ver todos os agendamentos</a>
                         </div>
                     </div>
 
@@ -207,19 +134,19 @@
                         </div>
                         <div class="card-content">
                             <div class="quick-actions">
-                                <a href="cadastro-paciente.html" class="btn btn-primary full-width">
+                                <a href="{{ url_for('view_paciente_cadastro') }}" class="btn btn-primary full-width">
                                     <i class="fas fa-users"></i>
                                     Novo Paciente
                                 </a>
-                                <a href="cadastro-medico.html" class="btn btn-primary full-width">
+                                <a href="{{ url_for('view_medico') }}" class="btn btn-primary full-width">
                                     <i class="fas fa-user-md"></i>
                                     Novo Médico
                                 </a>
-                                <a href="cadastro-agendamento.html" class="btn btn-primary full-width">
+                                <a href="{{ url_for('agendamentos') }}" class="btn btn-primary full-width">
                                     <i class="fas fa-calendar-alt"></i>
                                     Novo Agendamento
                                 </a>
-                                <a href="cadastro-convenio.html" class="btn btn-primary full-width">
+                                <a href="{{ url_for('convenios') }}" class="btn btn-primary full-width">
                                     <i class="fas fa-id-card"></i>
                                     Novo Convênio
                                 </a>
@@ -234,48 +161,13 @@
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h2 class="card-title">Especialidades Mais Procuradas</h2>
+                                <h2 class="card-title">Especialidades Mais Procuradas Hoje</h2>
                                 <p class="card-description">Distribuição de consultas por especialidade</p>
                             </div>
                         </div>
                         <div class="card-content">
-                            <div class="chart-container">
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Cardiologia</span>
-                                        <span>32%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 32%; background-color: #3b82f6;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Ortopedia</span>
-                                        <span>27%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 27%; background-color: #60a5fa;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Pediatria</span>
-                                        <span>23%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 23%; background-color: #93c5fd;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Dermatologia</span>
-                                        <span>18%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 18%; background-color: #bfdbfe;"></div>
-                                    </div>
-                                </div>
+                            <div class="chart-container" id="chartContainer">
+
                             </div>
                         </div>
                     </div>
@@ -289,52 +181,8 @@
                             </div>
                         </div>
                         <div class="card-content">
-                            <div class="chart-container">
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Unimed</span>
-                                        <span>35%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 35%; background-color: #2563eb;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Amil</span>
-                                        <span>25%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 25%; background-color: #3b82f6;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Bradesco Saúde</span>
-                                        <span>20%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 20%; background-color: #60a5fa;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Particular</span>
-                                        <span>15%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 15%; background-color: #93c5fd;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-item">
-                                    <div class="chart-label">
-                                        <span>Outros</span>
-                                        <span>5%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress" style="width: 5%; background-color: #bfdbfe;"></div>
-                                    </div>
-                                </div>
+                            <div class="chart-container" id="chartContainerConvenio">
+
                             </div>
                         </div>
                     </div>
@@ -344,11 +192,147 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.main-content').classList.toggle('expanded');
-        });
+    async function carregarConsultas() {
+            try {
+                const resposta = await fetch('/consulta/agendamentos/hoje');
+                const consultas = await resposta.json();
+
+                const lista = document.getElementById('appointmentList');
+
+                if (!lista) {
+                    console.error('Elemento com id "appointmentList" não encontrado no DOM');
+                    return;
+                }
+
+                // Remove itens anteriores da lista
+                lista.querySelectorAll('.appointment-item').forEach(el => el.remove());
+
+                // Referência ao botão, se houver
+                const botao = lista.querySelector('a');
+
+                consultas.forEach(consulta => {
+                    const item = document.createElement('div');
+                    item.className = 'appointment-item';
+
+                    // Corrigir o formato da data para ISO (substituindo espaço por 'T')
+                    const dataHora = new Date(consulta.hora_consulta.replace(' ', 'T'));
+
+                    // Verifica se a data é válida
+                    const horaFormatada = !isNaN(dataHora)
+                        ? dataHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : 'Hora inválida';
+
+                    item.innerHTML = `
+                        <div class="appointment-info">
+                            <div class="appointment-icon">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                            </div>
+                            <div>
+                                <p class="appointment-name">${consulta.nome_paciente}</p>
+                                <p class="appointment-doctor">${consulta.nome_medico} - ${consulta.nome_especialidade}</p>
+                            </div>
+                        </div>
+                        <div class="appointment-time">
+                            <p class="time">${horaFormatada}</p>
+                        </div>
+                    `;
+
+                    lista.appendChild(item);
+                });
+
+                // Reanexa o botão no final, se necessário
+                if (botao && !lista.contains(botao)) {
+                    lista.appendChild(botao);
+                }
+
+            } catch (erro) {
+                console.error("Erro ao carregar agendamentos:", erro);
+            }
+        }
+
+        carregarConsultas();
     </script>
+
+    <script>
+    async function carregarEstatisticas() {
+        try {
+            const resposta = await fetch('/esp/estatisticas');
+            const estatisticas = await resposta.json();
+
+            const container = document.getElementById('chartContainer');
+            if (!container) {
+                console.error('Elemento com id "chartContainer" não encontrado no DOM');
+                return;
+            }
+
+            container.innerHTML = ''; // Limpa dados anteriores
+
+            // Ordena do maior para o menor percentual
+            estatisticas.sort((a, b) => b.percentual - a.percentual);
+
+            estatisticas.forEach(item => {
+                const chartItem = document.createElement('div');
+                chartItem.className = 'chart-item';
+
+                chartItem.innerHTML = `
+                    <div class="chart-label">
+                        <span>${item.nome_especialidade}</span>
+                        <span>${item.percentual}%</span>
+                    </div>
+                    <div class="progress-bar" role="progressbar" aria-valuenow="${item.percentual}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress" style="width: ${item.percentual}%; background-color: #3b82f6;"></div>
+                    </div>
+                `;
+
+                container.appendChild(chartItem);
+            });
+
+        } catch (erro) {
+            console.error("Erro ao carregar estatísticas:", erro);
+        }
+    }
+
+    carregarEstatisticas();
+</script>
+
+<script>
+    async function carregarEstatisticasConvenio() {
+        try {
+            const resposta = await fetch('/convenio/estatisticas');
+            const estatisticas = await resposta.json();
+
+            const container = document.getElementById('chartContainerConvenio');
+            if (!container) {
+                console.error('Elemento com id "chartContainerConvenio" não encontrado no DOM');
+                return;
+            }
+
+            container.innerHTML = '';
+
+            estatisticas.forEach(item => {
+                const chartItem = document.createElement('div');
+                chartItem.className = 'chart-item';
+
+                chartItem.innerHTML = `
+                    <div class="chart-label">
+                        <span>${item.nome_convenio}</span>
+                        <span>${item.percentual}%</span>
+                    </div>
+                    <div class="progress-bar" role="progressbar" aria-valuenow="${item.percentual}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress" style="width: ${item.percentual}%; background-color: #3b82f6;"></div>
+                    </div>
+                `;
+
+                container.appendChild(chartItem);
+            });
+
+        } catch (erro) {
+            console.error("Erro ao carregar estatísticas do convênio:", erro);
+        }
+    }
+
+    carregarEstatisticasConvenio();
+</script>
+
 </body>
 </html>
