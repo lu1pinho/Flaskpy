@@ -41,6 +41,10 @@ A organização dos arquivos e diretórios do projeto é a seguinte:
 - Tailwind CSS
 - Node.js
 
+## Vídeo do Youtube
+https://www.youtube.com/watch?v=LoXDsX_fffs
+
+
 ## Contribuição
 Para contribuir com o projeto:
 1. Faça um fork do repositório.
@@ -56,8 +60,6 @@ Este projeto está licenciado sob a licença MIT.
 ![127 0 0 1_5000_view_paciente_](https://github.com/user-attachments/assets/73e5f5a8-57be-4c76-bf7d-0174845ba4d4)
 ![127 0 0 1_5000_view_paciente_](https://github.com/user-attachments/assets/b70ef6d3-f0da-4dcc-a97b-8c6a8251fec7)
 
-## Vídeo do Youtube
-https://www.youtube.com/watch?v=LoXDsX_fffs
 
 
 
