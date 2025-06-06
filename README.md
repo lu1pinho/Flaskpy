@@ -44,6 +44,11 @@ A organização dos arquivos e diretórios do projeto é a seguinte:
 ## Vídeo do Youtube
 [https://www.youtube.com/watch?v=LoXDsX_fffs](https://youtu.be/bVQ2p-JzmPA)
 
+Google Drive se o vídeo for removido pelo youtube novamente:
+https://drive.google.com/file/d/1wF2DO0KL2KiJJJ-FqCkmnJaQI2OvEg2k/view?usp=sharing
+
+![image](https://github.com/user-attachments/assets/27304062-89d5-4a4a-89e8-d408c998b37b)
+
 
 ## Contribuição
 Para contribuir com o projeto:
