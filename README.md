@@ -42,7 +42,7 @@ A organização dos arquivos e diretórios do projeto é a seguinte:
 - Node.js
 
 ## Vídeo do Youtube
-https://www.youtube.com/watch?v=LoXDsX_fffs
+[https://www.youtube.com/watch?v=LoXDsX_fffs](https://youtu.be/bVQ2p-JzmPA)
 
 
 ## Contribuição
